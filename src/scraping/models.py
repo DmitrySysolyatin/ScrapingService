@@ -27,6 +27,7 @@ class Language(models.Model):
 
 class Vacancy(models.Model):
     url = models.URLField(unique=True)
+
     title = models.CharField(max_length=250, verbose_name ='Title')
     company = models.CharField(max_length=250, verbose_name='Company')
     description = models.TextField(verbose_name='Vacation description')

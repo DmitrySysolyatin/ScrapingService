@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Vacancies{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <form action="">
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    {% for object in object_list %}
+        <div class="card my-3">
+          <h5 class="card-header"><a href="{{ object.url }}">{{ object.title }}</a></h5>
+            <div class="card-body">
+                <p><b>{{ object.company }}</b></p>
+                <p>{{ object.city.name }} | {{ object.language }}</p>
+                <p class="card-text">{{ object.description }}</p>
+                <p><small>{{ object.timestamp|date:'d.m.Y' }} {{ object.timestamp|time:'H:i' }}</small></p>
+            </div>
+        </div>
+        {% empty %}
+        <h5 class="mx-auto my-3">Sorry, but there is no results for your search:(
+            Please, change your request.
+        </h5>
+{% endfor %}
+
+
+
+
+
+{% endblock %}
+
