@@ -32,7 +32,6 @@ def rabota_by(url, city=None, language=None):
                     company = div.find('div', class_='vacancy-serp-item__meta-info-company').a.text
                     description = div.find('div', class_='g-user-content').text
                     description = description.replace('<highlighttext>', '').replace('</highlighttext>', '')
-
                     jobs.append({'title': title, 'url': href, 'company': company, 'description': description,
                                  'city_id': city, 'language_id': language})
             else:
