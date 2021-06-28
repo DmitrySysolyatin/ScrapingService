@@ -1,0 +1,30 @@
+import os, sys
+import django
+from django.contrib.auth import get_user_model
+from django.core.mail import EmailMultiAlternatives
+from scraping.models import Vacancy
+
+project = os.path.dirname(os.path.abspath('manage.py'))
+sys.path.append(project)  # запуск django вне проекта
+os.environ['DJANGO_SETTINGS_MODULE'] = 'src.settings'
+
+django.setup()
+User = get_user_model()
+qs = User.objects.filter(send_email=True).values('city', 'language', 'email')
+users_dict = {}
+for i in qs:
+    users_dict.setdefault((i['city'], i['language']), [])
+    users_dict[(i['city'], i['language'])].append(i['email'])
+if users_dict:
+    params = {'city_id__in': [], 'language_id__in': []}
+    for pair in users_dict.keys():
+        params['city_id__in'].append(pair[0])
+        params['language_id__in'].append(pair[1])
+    qs = Vacancy.objects.filter(**params)[:10]
+
+subject, from_email, to = 'hello', 'from@example.com', 'to@example.com'
+text_content = 'This is an important message.'
+html_content = '<p>This is an <strong>important</strong> message.</p>'
+msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+msg.attach_alternative(html_content, "text/html")
+msg.send()
