@@ -23,11 +23,11 @@ parsers = (
     (dev_by, 'dev_by')
 )
 
+jobs, errors = [], []
 
 def get_settings():
-    qs = User.objects.filter(send_email=True).values()
-    settings_set = set(
-        (q['city_id'], q['language_id']) for q in qs)  # генератор делает сет кортежей из id города и языка
+    qs = Url.objects.filter().values()
+    settings_set = set((q['city_id'], q['language_id']) for q in qs)  # генератор делает сет кортежей из id города и языка
     return settings_set
 
 
@@ -40,19 +40,17 @@ def get_urls(_settings):
         urls.append(tmp)
     return urls
 
-
-settings = get_settings()
-url_list = get_urls(settings)
-jobs, errors = [], []
-
-# асинхронный запуск
-
+  # асинхронный запуск
 
 async def main(value):
     func, url, city, language = value
     job, error = await loop.run_in_executor(None, func, url, city, language)
     errors.extend(error)
     jobs.extend(job)
+
+settings = get_settings()
+url_list = get_urls(settings)
+
 loop = asyncio.get_event_loop()
 tmp_tasks = [(func, data['url_data'][key], data['city'], data['language'])
              # набор функций и данных(урлы, города и языки) для асинхронного запуска

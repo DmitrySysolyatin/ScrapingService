@@ -38,7 +38,7 @@ class Vacancy(models.Model):
     city = models.ForeignKey('City', on_delete=models.CASCADE, verbose_name='City')
     language = models.ForeignKey('Language', on_delete=models.CASCADE,
                                  verbose_name='Programming language')
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateField(auto_now=True, verbose_name='Add time')
 
     class Meta:
         verbose_name_plural = 'Vacancies'
@@ -49,8 +49,11 @@ class Vacancy(models.Model):
 
 
 class Error(models.Model):
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateField(auto_now=True)
     data = models.JSONField()
+
+    def __str__(self):
+        return str(self.timestamp)
 
 
 class Url(models.Model):
