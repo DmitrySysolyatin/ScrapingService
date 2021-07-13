@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+import datetime as dt
 from django.contrib.auth import get_user_model
 
 project = os.path.dirname(os.path.abspath('manage.py'))
@@ -36,8 +37,9 @@ def get_urls(_settings):
     url_dict = {(q['city_id'], q['language_id']): q['url_data'] for q in qs}
     urls = []
     for pair in _settings:  # полученные данные
-        tmp = {'city': pair[0], 'language': pair[1], 'url_data': url_dict[pair]}
-        urls.append(tmp)
+        if pair in url_dict:
+            tmp = {'city': pair[0], 'language': pair[1], 'url_data': url_dict[pair]}
+            urls.append(tmp)
     return urls
 
   # асинхронный запуск
@@ -68,4 +70,10 @@ for job in jobs:
         pass
 
 if errors:
-    er = Error(data=errors).save()
+    qs = Error.objects.filter(timestamp=dt.date.today())
+    if qs.exists():
+        er = qs.first()
+        er.data.update({'errors': errors})
+        er.save()
+    else:
+        er = Error(data=f'errors:{errors}').save()
