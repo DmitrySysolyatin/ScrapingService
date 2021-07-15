@@ -2,8 +2,6 @@ import os
 import sys
 import django
 import datetime
-from django.utils import timezone
-
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 
@@ -64,20 +62,29 @@ to = ADMIN_USER
 
 if qs.exists():  #отправка ошибок скрапинга
     error = qs.first()
-    data = error.data
+    data = error.data.get('errors', [])
     for i in data:
         _html += f'<p><a href="{i["url"]}">{ i["title"] }</a></p><br>'
     subject = f'Scraping errors {today}'
     text_content = f'Scraping errors'
+    data = error.data.get('user_data')
+    if data:
+        _html += '<hr>'
+        _html += '<h2>Users wishes </h2>'
+        for i in data:
+            _html += f'<p>City: {i["city"]}, Language: {i["language"]}, Email: {i["email"]}</p><br>'
+        subject = f'Users wishes {today}'
+        text_content = f'Users wishes'
 
 qs = Url.objects.all().values('city', 'language')
 urls_dict = {(i['city'], i['language']): True for i in qs}
 urls_err = ''
 for keys in users_dict.keys():  #отправка ошибок из-за отсутствия урлов
     if keys not in urls_dict:
-        city = City.objects.get(pk=keys[0])
-        language = Language.objects.get(pk=keys[1])
-        urls_err += f'<p> There is not urls for city {city} and language {language}</p><br>'
+        if keys[0] and keys[1]:
+            city = City.objects.get(pk=keys[0])
+            language = Language.objects.get(pk=keys[1])
+            urls_err += f'<p> There is not urls for city {city} and language {language}</p><br>'
 if urls_err:
     subject += ' Missing urls'
     _html += urls_err

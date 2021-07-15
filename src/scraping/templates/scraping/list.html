@@ -2,7 +2,6 @@
 
 {% block title %}Vacancies{% endblock %}
 
-
 {% block content %}
 
     <div class="row">
@@ -19,6 +18,8 @@
         </div>
     </div>
 
+{% if object_list %}
+    <h5 class="col-md-5 mx-auto my-2">Results according to your request:</h5>
     {% for object in object_list %}
         <div class="card my-3">
           <h5 class="card-header" style="background-color: #ffcddb"><a href="{{ object.url }}" style="color: black">{{ object.title }}</a></h5>
@@ -29,12 +30,7 @@
                 <p><small>{{ object.timestamp|date:'d.m.Y' }}</small></p>
             </div>
         </div>
-        {% empty %}
-        <h5 class="col-md-5 mx-auto my-2">Sorry, but there is no results for your search:(</h5>
-        <h5 class="col-md-5 mx-auto">Please, change your request.</h5>
     {% endfor %}
-{% if object_list %}
-
     <style>
             {% block style %}
                 .pagination > li > a
@@ -95,10 +91,10 @@
         </nav>
         </div>
     </div>
+{% else %}
+    <h5 class="col-md-5 mx-auto my-2">Sorry, but there is no results for your search:(</h5>
+    <h5 class="col-md-5 mx-auto">Please, change your request.</h5>
 {% endif %}
-
-
-
 
 {% endblock %}
 
